@@ -199,8 +199,8 @@ func RSAVerifyFromB64(key *rsa.PublicKey, msg []byte, signature string) bool {
 	hash.Write(msg)
 	signaturebytes, err := base64.RawStdEncoding.DecodeString(signature)
 	if err != nil {
-		return nil, false
+		return false
 	}
-	err := rsa.VerifyPKCS1v15(key, crypto.SHA256, hash.Sum(nil)[:], signaturebytes)
+	err = rsa.VerifyPKCS1v15(key, crypto.SHA256, hash.Sum(nil)[:], signaturebytes)
 	return err == nil
 }

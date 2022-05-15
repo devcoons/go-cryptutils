@@ -180,16 +180,27 @@ func RSASign(key *rsa.PrivateKey, msg []byte) ([]byte, bool) {
 	return signature, err == nil
 }
 
-func RSASignToStr(key *rsa.PrivateKey, msg []byte) (string, bool) {
+func RSASignToB64(key *rsa.PrivateKey, msg []byte) (string, bool) {
 	hash := sha256.New()
 	hash.Write(msg)
 	signature, err := rsa.SignPKCS1v15(rand.Reader, key, crypto.SHA256, hash.Sum(nil)[:])
-	return string(signature), err == nil
+	return base64.RawStdEncoding.EncodeToString(signature), err == nil
 }
 
 func RSAVerify(key *rsa.PublicKey, msg []byte, signature []byte) bool {
 	hash := sha256.New()
 	hash.Write(msg)
 	err := rsa.VerifyPKCS1v15(key, crypto.SHA256, hash.Sum(nil)[:], signature)
+	return err == nil
+}
+
+func RSAVerifyFromB64(key *rsa.PublicKey, msg []byte, signature string) bool {
+	hash := sha256.New()
+	hash.Write(msg)
+	signaturebytes, err := base64.RawStdEncoding.DecodeString(signature)
+	if err != nil {
+		return nil, false
+	}
+	err := rsa.VerifyPKCS1v15(key, crypto.SHA256, hash.Sum(nil)[:], signaturebytes)
 	return err == nil
 }
